@@ -37,7 +37,7 @@ public class Student implements Serializable {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Adress adress;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@Cascade(CascadeType.SAVE_UPDATE)
 	private University university;
 
@@ -71,5 +71,13 @@ public class Student implements Serializable {
 
 	public void setAdress(Adress adress) {
 		this.adress = adress;
+	}
+
+	public University getUniversity() {
+		return university;
+	}
+
+	public void setUniversity(University university) {
+		this.university = university;
 	}
 }

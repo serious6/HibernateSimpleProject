@@ -45,11 +45,16 @@ public class UniversityDaoTest {
 		student1.setAdress(wg1);
 		student1.setFirstName("Paul");
 		student1.setLastName("Paulsen");
+		student1.setUniversity(haw);
 
 		Student student2 = new Student();
 		student2.setAdress(wg1);
 		student2.setFirstName("Paulina");
 		student2.setLastName("Paulinsen");
+		student2.setUniversity(haw);
+
+		haw.addStudent(student1);
+		haw.addStudent(student2);
 
 		universityDao.add(haw);
 	}
