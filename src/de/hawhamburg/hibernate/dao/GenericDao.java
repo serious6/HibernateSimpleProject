@@ -19,13 +19,16 @@ public class GenericDao<T extends Serializable> implements IGenericDao<T> {
 
 	@Override
 	public void add(T theObject) {
+		Session session = null;
 		try {
 			assert theObject != null;
 
-			Session session = getTransaction();
+			session = getTransaction();
 			session.save(theObject);
 			session.getTransaction().commit();
 		} catch (Exception e) {
+			if (session != null && session.getTransaction() != null)
+				session.getTransaction().rollback();
 			e.printStackTrace();
 			throw e;
 		}
@@ -34,14 +37,18 @@ public class GenericDao<T extends Serializable> implements IGenericDao<T> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public T findById(long id) {
-		try {
-			assert id > 0;
+		assert id > 0;
 
-			Session session = getTransaction();
+		Session session = null;
+		try {
+
+			session = getTransaction();
 			Object result = session.get(typeParameterClass, id);
 			session.getTransaction().commit();
 			return (result != null ? (T) result : null);
 		} catch (Exception e) {
+			if (session != null && session.getTransaction() != null)
+				session.getTransaction().rollback();
 			e.printStackTrace();
 			throw e;
 		}
@@ -49,13 +56,37 @@ public class GenericDao<T extends Serializable> implements IGenericDao<T> {
 
 	@Override
 	public void remove(T theObject) {
-		try {
-			assert theObject != null;
+		assert theObject != null;
 
-			Session session = getTransaction();
+		Session session = null;
+		try {
+
+			session = getTransaction();
 			session.delete(theObject);
 			session.getTransaction().commit();
 		} catch (Exception e) {
+			if (session != null && session.getTransaction() != null)
+				session.getTransaction().rollback();
+			e.printStackTrace();
+			throw e;
+		}
+	}
+
+	@Override
+	public T update(T objectToBeUpdated) {
+		assert objectToBeUpdated != null;
+
+		Session session = null;
+		try {
+
+			session = getTransaction();
+			session.merge(objectToBeUpdated);
+
+			session.getTransaction().commit();
+			return objectToBeUpdated;
+		} catch (Exception e) {
+			if (session != null && session.getTransaction() != null)
+				session.getTransaction().rollback();
 			e.printStackTrace();
 			throw e;
 		}
@@ -66,10 +97,11 @@ public class GenericDao<T extends Serializable> implements IGenericDao<T> {
 	 * 
 	 * @return the transaction
 	 */
-	private Session getTransaction() {
+	protected Session getTransaction() {
 		Session session = SessionFactoryBuilder.getSessionFactory()
 				.getCurrentSession();
 		session.beginTransaction();
 		return session;
 	}
+
 }

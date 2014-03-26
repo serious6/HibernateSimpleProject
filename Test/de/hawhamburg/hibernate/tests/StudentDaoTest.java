@@ -1,5 +1,12 @@
 package de.hawhamburg.hibernate.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,13 +34,47 @@ public class StudentDaoTest {
 				"Musterhausen"));
 
 		studentDao.add(student);
-		Assert.assertNotNull(student.getId());
+		assertNotNull(student.getId());
+	}
+
+	@Test
+	public void updateStudent() {
+		Student student = new Student();
+		student.setFirstName("Update");
+		student.setLastName("Tester");
+		student.setAdress(new Adress("Teststraﬂe", "12a", "99999",
+				"Musterhausen"));
+
+		studentDao.add(student);
+		assertNotNull(student.getId());
+
+		String changedName = "ChangedName";
+
+		student.setFirstName(changedName);
+		studentDao.update(student);
+
+		Student updatedStudent = studentDao.findById(student.getId());
+		assertNotNull(updatedStudent);
+
+		assertEquals(changedName, updatedStudent.getFirstName());
+	}
+
+	@Test
+	public void criteriaTest() {
+		Student base = new Student();
+		base.setFirstName("Alex");
+		base.setAdress(new Adress("Teststraﬂe", "1a", "99998", "Musterhausen"));
+		studentDao.add(base);
+
+		List<Student> students = studentDao.selectAllStudentsWithoutUni();
+		assertNotNull(students);
+		assertTrue(students.size() > 0);
 	}
 
 	@Test
 	public void findStudentThatIsNotThere() {
 		Student student = studentDao.findById(Long.MAX_VALUE);
-		Assert.assertNull(student);
+		assertNull(student);
 	}
 
 	@Test
@@ -43,13 +84,13 @@ public class StudentDaoTest {
 		base.setAdress(new Adress("Teststraﬂe", "1a", "99998", "Musterhausen"));
 		studentDao.add(base);
 
-		Assert.assertNotNull(base.getId());
+		assertNotNull(base.getId());
 
 		Student student = studentDao.findById(base.getId());
-		Assert.assertNotNull(student);
+		assertNotNull(student);
 
-		Assert.assertEquals("Max", student.getFirstName());
-		Assert.assertEquals(base.getId(), student.getId());
+		assertEquals("Max", student.getFirstName());
+		assertEquals(base.getId(), student.getId());
 	}
 
 	@Test
@@ -62,7 +103,7 @@ public class StudentDaoTest {
 
 		studentDao.remove(anna);
 
-		Assert.assertNull(studentDao.findById(anna.getId()));
+		assertNull(studentDao.findById(anna.getId()));
 	}
 
 }

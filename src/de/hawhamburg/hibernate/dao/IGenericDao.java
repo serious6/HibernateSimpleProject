@@ -34,4 +34,13 @@ public interface IGenericDao<T extends Serializable> {
 	 *            the the object
 	 */
 	public void remove(T objectToBeRemoved);
+
+	/**
+	 * Update.
+	 * 
+	 * @param objectToBeUpdated
+	 *            the object to be updated
+	 * @return the t
+	 */
+	public T update(T objectToBeUpdated);
 }
